@@ -127,8 +127,11 @@
                     <a href="#footer" class="text-brand-brown hover:text-brand-gold transition-colors text-sm uppercase tracking-wider font-semibold">Contacto</a>
                 </nav>
 
-                <!-- Icons (Search, Heart, Cart) -->
+                <!-- Icons (Admin, Search, Heart, Cart) -->
                 <div class="flex items-center space-x-4 md:space-x-6">
+                    <button onclick="navigate('admin')" class="text-brand-brown hover:text-brand-gold transition-colors" title="Administrador" aria-label="Abrir administrador">
+                        <i class="fas fa-lock text-lg"></i>
+                    </button>
                     <button onclick="navigate('shop')" class="text-brand-brown hover:text-brand-gold transition-colors" title="Buscar">
                         <i class="fas fa-search text-lg"></i>
                     </button>
@@ -605,6 +608,107 @@
             </div>
         </section>
 
+        <!-- ================= VISTA: ADMINISTRADOR ================= -->
+        <section id="view-admin" class="view-section py-10 max-w-7xl mx-auto px-4 min-h-[70vh]">
+            <div id="admin-login-panel" class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-sm border border-brand-beige">
+                <div class="text-center mb-6">
+                    <div class="w-14 h-14 rounded-full bg-brand-dark text-white flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-lock text-xl"></i>
+                    </div>
+                    <h1 class="font-serif text-3xl text-brand-brown">Administrador</h1>
+                    <p class="text-sm text-gray-500 mt-2">Ingresa la clave para administrar los productos de Google Sheets.</p>
+                </div>
+                <form onsubmit="adminLogin(event)">
+                    <label for="admin-password" class="block text-sm font-semibold text-brand-brown mb-2">Clave de administrador</label>
+                    <div class="flex gap-2">
+                        <input id="admin-password" type="password" autocomplete="current-password" required class="flex-1 p-3 border border-brand-beige rounded-lg focus:outline-none focus:border-brand-gold" placeholder="Tu clave">
+                        <button type="submit" id="admin-login-btn" class="bg-brand-gold hover:bg-brand-goldhover text-white px-5 rounded-lg font-bold transition-colors">Entrar</button>
+                    </div>
+                    <p id="admin-login-error" class="hidden text-sm text-red-500 mt-3"></p>
+                </form>
+            </div>
+
+            <div id="admin-dashboard" class="hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <span class="text-brand-gold uppercase tracking-[0.2em] text-xs font-bold">MARGIE CANDLES</span>
+                        <h1 class="font-serif text-3xl md:text-4xl text-brand-brown mt-1">Administrar productos</h1>
+                        <p class="text-gray-500 mt-2">Agrega, edita o elimina productos. Los cambios se guardan en tu hoja de Google Sheets.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="openAdminProductModal()" class="bg-brand-gold hover:bg-brand-goldhover text-white px-5 py-3 rounded-lg text-sm font-bold transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Agregar producto
+                        </button>
+                        <button onclick="adminLogout()" class="bg-white border border-brand-beige hover:border-brand-gold text-brand-brown px-5 py-3 rounded-lg text-sm font-bold transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Salir
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-brand-beige shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-brand-beige flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
+                        <div class="relative w-full sm:max-w-md">
+                            <i class="fas fa-search absolute left-3 top-3.5 text-gray-400"></i>
+                            <input id="admin-search" type="text" oninput="renderAdminProducts()" placeholder="Buscar producto..." class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-brand-gold">
+                        </div>
+                        <span id="admin-product-count" class="text-sm text-gray-500"></span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-brand-light text-brand-brown">
+                                <tr>
+                                    <th class="text-left p-4 font-semibold">Producto</th>
+                                    <th class="text-left p-4 font-semibold">Categoría</th>
+                                    <th class="text-left p-4 font-semibold">Precio</th>
+                                    <th class="text-left p-4 font-semibold">Stock</th>
+                                    <th class="text-right p-4 font-semibold">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-products-body" class="divide-y divide-brand-beige"></tbody>
+                        </table>
+                    </div>
+                    <div id="admin-empty-products" class="hidden p-10 text-center text-gray-500">No hay productos para mostrar.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modal editor de producto -->
+        <div id="admin-product-modal" class="hidden fixed inset-0 bg-black/50 z-[100] p-4 overflow-y-auto">
+            <div class="min-h-full flex items-center justify-center py-6">
+                <div class="bg-white w-full max-w-3xl rounded-2xl shadow-xl border border-brand-beige overflow-hidden">
+                    <div class="flex items-center justify-between px-6 py-4 border-b border-brand-beige bg-brand-light">
+                        <div>
+                            <h2 id="admin-modal-title" class="font-serif text-2xl text-brand-brown">Agregar producto</h2>
+                            <p class="text-xs text-gray-500 mt-1">Estos campos corresponden a las columnas de tu hoja.</p>
+                        </div>
+                        <button type="button" onclick="closeAdminProductModal()" class="w-10 h-10 rounded-full hover:bg-brand-beige text-brand-brown" aria-label="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <form id="admin-product-form" onsubmit="saveAdminProduct(event)" class="p-6">
+                        <input id="admin-edit-row" type="hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div><label class="block text-sm font-semibold text-brand-brown mb-2">Nombre *</label><input id="admin-name" required class="w-full p-3 border border-brand-beige rounded-lg focus:outline-none focus:border-brand-gold"></div>
+                            <div><label class="block text-sm font-semibold text-brand-brown mb-2">Categoría *</label><input id="admin-category" required class="w-full p-3 border border-brand-beige rounded-lg focus:outline-none focus:border-brand-gold" placeholder="hogar, evento, navideña..."></div>
+                            <div><label class="block text-sm font-semibold text-brand-brown mb-2">Precio *</label><input id="admin-price" type="number" min="0" step="0.01" required class="w-full p-3 border border-brand-beige rounded-lg focus:outline-none focus:border-brand-gold"></div>
+                            <div><label class="block text-sm font-semibold text-brand-brown mb-2">Precio original</label><input id="admin-old-price" type="number" min="0" step="0.01" class="w-full p-3 border border-brand-beige rounded-lg focus:outline-none focus:border-brand-gold" placeholder="Opcional"></div>
+                            <div class="md:col-span-2"><label class="block text-sm font-semibold text-brand-brown mb-2">Descripción *</label><textarea id="admin-description" required rows="3" class="w-full p-3 border border-brand-beige rounded-lg focus:outline-none focus:border-brand-gold"></textarea></div>
+                            <div><label class="block text-sm font-semibold text-brand-brown mb-2">Aroma principal *</label><input id="admin-aroma" required class="w-full p-3 border border-brand-beige rounded-lg focus:outline-none focus:border-brand-gold" placeholder="vanilla,coco,menta"><p class="text-xs text-gray-400 mt-1">Separa varias opciones con comas.</p></div>
+                            <div><label class="block text-sm font-semibold text-brand-brown mb-2">Tamaño *</label><input id="admin-size" required class="w-full p-3 border border-brand-beige rounded-lg focus:outline-none focus:border-brand-gold" placeholder="pequeño,mediano,grande"><p class="text-xs text-gray-400 mt-1">Separa varias opciones con comas.</p></div>
+                            <div><label class="block text-sm font-semibold text-brand-brown mb-2">Stock *</label><input id="admin-stock" type="number" min="0" step="1" required class="w-full p-3 border border-brand-beige rounded-lg focus:outline-none focus:border-brand-gold"></div>
+                            <div><label class="block text-sm font-semibold text-brand-brown mb-2">Imagen (link) *</label><input id="admin-image" type="url" required class="w-full p-3 border border-brand-beige rounded-lg focus:outline-none focus:border-brand-gold" placeholder="https://..."></div>
+                        </div>
+                        <div id="admin-save-error" class="hidden mt-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm"></div>
+                        <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-7 pt-5 border-t border-brand-beige">
+                            <button type="button" onclick="closeAdminProductModal()" class="px-5 py-3 rounded-lg border border-brand-beige text-brand-brown font-bold hover:border-brand-gold transition-colors">Cancelar</button>
+                            <button id="admin-save-btn" type="submit" class="px-6 py-3 rounded-lg bg-brand-gold hover:bg-brand-goldhover text-white font-bold transition-colors"><i class="fas fa-save mr-2"></i>Guardar producto</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- Footer -->
@@ -663,6 +767,12 @@
         // --- 1. BASE DE DATOS DE PRODUCTOS (Dinámica) ---
         let productos = [];
 
+        // URL del Web App de Google Apps Script para el panel de administrador.
+        // Reemplaza esta URL una sola vez después de desplegar Code.gs.
+        const ADMIN_API_URL = 'PEGA_AQUI_LA_URL_DE_TU_WEB_APP';
+        let adminAuthenticated = false;
+        let adminSessionPassword = '';
+
         // Función: Extraer datos de Google Sheets
         function cargarProductosDesdeGoogle() {
             // URL configurada automáticamente para salida CSV
@@ -677,6 +787,7 @@
                         // Mapeo defensivo adaptado a las columnas en español
                         productos = results.data.map((item, index) => ({
                             id: parseInt(item.id) || (index + 1),
+                            sheetRow: index + 2,
                             name: item.nombre,
                             price: parseFloat(item.precio),
                             oldPrice: item['precio original'] ? parseFloat(item['precio original']) : null,
@@ -757,6 +868,7 @@
                 renderCheckoutView();
             }
             if (viewId === 'favorites') { renderFavoritesView(); }
+            if (viewId === 'admin') { renderAdminView(); }
         }
 
         // --- 4. RENDERIZADO DE COMPONENTES DE UI ---
@@ -1421,6 +1533,225 @@ const form = e.target;
             }
             
             btn.href = `https://wa.me/${baseNumber}?text=${encodeURIComponent(text)}`;
+        }
+
+        // --- 7. PANEL DE ADMINISTRADOR ---
+        function renderAdminView() {
+            const login = document.getElementById('admin-login-panel');
+            const dashboard = document.getElementById('admin-dashboard');
+            if (!login || !dashboard) return;
+            if (adminAuthenticated) {
+                login.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+                renderAdminProducts();
+            } else {
+                dashboard.classList.add('hidden');
+                login.classList.remove('hidden');
+                setTimeout(() => document.getElementById('admin-password')?.focus(), 100);
+            }
+        }
+
+        function adminApiConfigured() {
+            return /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(?:\?.*)?$/.test(ADMIN_API_URL);
+        }
+
+        async function adminRequest(action, payload = {}, passwordOverride = null) {
+            if (!adminApiConfigured()) throw new Error('Primero debes pegar la URL de tu Web App de Google Apps Script en ADMIN_API_URL.');
+            const body = new URLSearchParams();
+            body.set('action', action);
+            body.set('password', passwordOverride ?? adminSessionPassword);
+            Object.entries(payload).forEach(([key, value]) => body.set(key, value ?? ''));
+            const response = await fetch(ADMIN_API_URL, { method: 'POST', body });
+            if (!response.ok) throw new Error(`Error de conexión (${response.status})`);
+            const data = await response.json();
+            if (!data.ok) throw new Error(data.error || 'No se pudo completar la operación.');
+            return data;
+        }
+
+        async function adminLogin(event) {
+            event.preventDefault();
+            const input = document.getElementById('admin-password');
+            const button = document.getElementById('admin-login-btn');
+            const errorBox = document.getElementById('admin-login-error');
+            const password = input.value;
+            errorBox.classList.add('hidden');
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Entrando';
+            try {
+                await adminRequest('login', {}, password);
+                adminSessionPassword = password;
+                adminAuthenticated = true;
+                input.value = '';
+                renderAdminView();
+                showToast('Administrador abierto 🔐');
+            } catch (error) {
+                errorBox.textContent = error.message;
+                errorBox.classList.remove('hidden');
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Entrar';
+            }
+        }
+
+        function adminLogout() {
+            adminAuthenticated = false;
+            adminSessionPassword = '';
+            closeAdminProductModal();
+            renderAdminView();
+            showToast('Sesión de administrador cerrada');
+        }
+
+        function renderAdminProducts() {
+            if (!adminAuthenticated) return;
+            const tbody = document.getElementById('admin-products-body');
+            const empty = document.getElementById('admin-empty-products');
+            const count = document.getElementById('admin-product-count');
+            const query = (document.getElementById('admin-search')?.value || '').trim().toLowerCase();
+            const filtered = productos.filter(p => `${p.name || ''} ${p.category || ''} ${p.aroma || ''} ${p.size || ''}`.toLowerCase().includes(query));
+            count.textContent = `${filtered.length} producto${filtered.length === 1 ? '' : 's'}`;
+            if (!filtered.length) {
+                tbody.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            tbody.innerHTML = filtered.map(p => `
+                <tr class="hover:bg-brand-light/50">
+                    <td class="p-4"><div class="flex items-center gap-3 min-w-[220px]"><img src="${escapeHtml(p.image || 'logo.png')}" onerror="this.src='logo.png'" alt="" class="w-12 h-12 rounded-lg object-cover bg-brand-light border border-brand-beige"><div><div class="font-semibold text-brand-brown">${escapeHtml(p.name || '')}</div><div class="text-xs text-gray-400">Fila ${p.sheetRow || '—'}</div></div></div></td>
+                    <td class="p-4 text-gray-600">${escapeHtml(p.category || '')}</td>
+                    <td class="p-4 font-semibold text-brand-brown">$${Number(p.price || 0).toFixed(2)}</td>
+                    <td class="p-4 text-gray-600">${Number.isFinite(Number(p.stock)) ? Number(p.stock) : 0}</td>
+                    <td class="p-4"><div class="flex justify-end gap-2 min-w-[160px]"><button onclick="openAdminProductModal(${p.id})" class="px-3 py-2 rounded-lg border border-brand-beige hover:border-brand-gold text-brand-brown transition-colors" title="Editar"><i class="fas fa-pen"></i></button><button onclick="deleteAdminProduct(${p.id})" class="px-3 py-2 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 transition-colors" title="Eliminar"><i class="fas fa-trash"></i></button></div></td>
+                </tr>`).join('');
+        }
+
+        function openAdminProductModal(productId = null) {
+            if (!adminAuthenticated) return;
+            const modal = document.getElementById('admin-product-modal');
+            const form = document.getElementById('admin-product-form');
+            const title = document.getElementById('admin-modal-title');
+            const errorBox = document.getElementById('admin-save-error');
+            form.reset();
+            errorBox.classList.add('hidden');
+            document.getElementById('admin-edit-row').value = '';
+            if (productId !== null) {
+                const p = productos.find(item => item.id === productId);
+                if (!p) return;
+                title.textContent = 'Editar producto';
+                document.getElementById('admin-edit-row').value = p.sheetRow || '';
+                document.getElementById('admin-name').value = p.name || '';
+                document.getElementById('admin-category').value = p.category || '';
+                document.getElementById('admin-price').value = Number.isFinite(Number(p.price)) ? Number(p.price) : '';
+                document.getElementById('admin-old-price').value = (p.oldPrice !== null && Number.isFinite(Number(p.oldPrice))) ? Number(p.oldPrice) : '';
+                document.getElementById('admin-description').value = p.desc || '';
+                document.getElementById('admin-aroma').value = p.aroma || '';
+                document.getElementById('admin-size').value = p.size || '';
+                document.getElementById('admin-stock').value = Number.isFinite(Number(p.stock)) ? Number(p.stock) : 0;
+                document.getElementById('admin-image').value = p.image || '';
+            } else {
+                title.textContent = 'Agregar producto';
+            }
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            setTimeout(() => document.getElementById('admin-name')?.focus(), 100);
+        }
+
+        function closeAdminProductModal() {
+            document.getElementById('admin-product-modal')?.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        function getAdminFormPayload() {
+            return {
+                nombre: document.getElementById('admin-name').value.trim(),
+                categoria: document.getElementById('admin-category').value.trim(),
+                precio: document.getElementById('admin-price').value,
+                precioOriginal: document.getElementById('admin-old-price').value,
+                descripcion: document.getElementById('admin-description').value.trim(),
+                aromaPrincipal: document.getElementById('admin-aroma').value.trim(),
+                tamano: document.getElementById('admin-size').value.trim(),
+                stock: document.getElementById('admin-stock').value,
+                imagen: document.getElementById('admin-image').value.trim()
+            };
+        }
+
+        function productFromAdminPayload(payload, row, id) {
+            const aromas = String(payload.aromaPrincipal || '').split(',').map(v => v.trim()).filter(Boolean);
+            const sizes = String(payload.tamano || '').split(',').map(v => v.trim()).filter(Boolean);
+            const oldPrice = payload.precioOriginal === '' ? null : Number(payload.precioOriginal);
+            return { id, sheetRow: Number(row), name: payload.nombre, price: Number(payload.precio), oldPrice: Number.isFinite(oldPrice) ? oldPrice : null, category: payload.categoria, aroma: payload.aromaPrincipal, aromas, size: payload.tamano, sizes, stock: Number(payload.stock), rating: 5, isNew: false, image: payload.imagen, desc: payload.descripcion };
+        }
+
+        function refreshCategoryOptions() {
+            const catContainer = document.getElementById('category-filters');
+            if (!catContainer) return;
+            const selected = state.shopFilters.category;
+            const cats = [...new Set(productos.map(p => p.category).filter(Boolean))];
+            catContainer.innerHTML = '<li><label class="flex items-center gap-2 cursor-pointer hover:text-brand-gold"><input type="radio" name="cat" value="all" class="accent-brand-gold"> Todas</label></li>';
+            cats.forEach(c => {
+                const li = document.createElement('li');
+                li.innerHTML = `<label class="flex items-center gap-2 cursor-pointer hover:text-brand-gold"><input type="radio" name="cat" value="${escapeHtml(c)}" class="accent-brand-gold"> ${escapeHtml(c)}</label>`;
+                catContainer.appendChild(li);
+            });
+            const radios = [...catContainer.querySelectorAll('input[name="cat"]')];
+            const active = radios.find(r => r.value === selected) || radios.find(r => r.value === 'all');
+            if (active) active.checked = true;
+        }
+
+        function refreshStoreAfterAdminChange() {
+            refreshCategoryOptions();
+            renderHome();
+            if (state.currentView === 'shop') renderShop();
+            renderAdminProducts();
+        }
+
+        async function saveAdminProduct(event) {
+            event.preventDefault();
+            const button = document.getElementById('admin-save-btn');
+            const errorBox = document.getElementById('admin-save-error');
+            const row = document.getElementById('admin-edit-row').value;
+            const payload = getAdminFormPayload();
+            const action = row ? 'update' : 'add';
+            errorBox.classList.add('hidden');
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Guardando...';
+            try {
+                const result = await adminRequest(action, row ? {...payload, row} : payload);
+                if (action === 'add') {
+                    const nextId = productos.length ? Math.max(...productos.map(p => Number(p.id) || 0)) + 1 : 1;
+                    productos.push(productFromAdminPayload(payload, result.row, nextId));
+                    showToast('Producto agregado ✅');
+                } else {
+                    const index = productos.findIndex(p => Number(p.sheetRow) === Number(row));
+                    if (index >= 0) productos[index] = productFromAdminPayload(payload, row, productos[index].id);
+                    showToast('Producto actualizado ✅');
+                }
+                closeAdminProductModal();
+                refreshStoreAfterAdminChange();
+            } catch (error) {
+                errorBox.textContent = error.message;
+                errorBox.classList.remove('hidden');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-save mr-2"></i>Guardar producto';
+            }
+        }
+
+        async function deleteAdminProduct(productId) {
+            const product = productos.find(p => p.id === productId);
+            if (!product) return;
+            if (!confirm(`¿Eliminar "${product.name}" de Google Sheets?`)) return;
+            try {
+                await adminRequest('delete', { row: product.sheetRow });
+                productos = productos.filter(p => p.id !== productId);
+                productos.forEach(p => { if (Number(p.sheetRow) > Number(product.sheetRow)) p.sheetRow -= 1; });
+                state.favorites = state.favorites.filter(id => id !== productId);
+                saveState();
+                refreshStoreAfterAdminChange();
+                showToast('Producto eliminado ✅');
+            } catch (error) {
+                showToast(error.message);
+            }
         }
 
         function setupFilters() {
