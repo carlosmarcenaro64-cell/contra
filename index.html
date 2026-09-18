@@ -769,14 +769,14 @@
 
         // URL del Web App de Google Apps Script para el panel de administrador.
         // Reemplaza esta URL una sola vez después de desplegar Code.gs.
-        const ADMIN_API_URL = 'https://script.google.com/macros/s/AKfycbyvzvO9S7A-RnymXJJniZYC-ttnHwk8TzhtLncHCD-l8Uw_txhaTYjPokR7NLB8MmdC/exec';
+        const ADMIN_API_URL = 'https://script.google.com/macros/s/AKfycbwIYRiLSDmMVE2BV8JcAzo-kAE4IQGLMzP2ti8QX9uOZRYJFa_G5BrgHbkmzUruwPMyzQ/exec';
         let adminAuthenticated = false;
         let adminSessionPassword = '';
 
         // Función: Extraer datos de Google Sheets
         function cargarProductosDesdeGoogle() {
             // URL configurada automáticamente para salida CSV
-            const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQVW8X2fb7pycWf6wvuHvfXDEs8pMa-dhpxOKVgYuRh0s9Ibpn_TQISbyGP_XEOQNQzAr1hh7SVOoQJ/pub?gid=0&single=true&output=csv';
+            const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTBrdUPCHMCq-_CYy906n_OL9XLI8-YufrvTsj0BW7sp6XtsR5Oy-9Hsgv-gkDnCXzbVGhG2JgnKS8u/pub?gid=0&single=true&output=csv';
 
             return new Promise((resolve, reject) => {
                 Papa.parse(urlCSV, {
